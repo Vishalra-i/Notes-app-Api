@@ -1,24 +1,30 @@
 import cors from "cors";
 import express from "express";
-import userRouter from "./routes/user.routes.js"
+import userRouter from "./routes/user.routes.js";
+import notesRouter from "./routes/notes.routes.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
+// Enable CORS
 app.use(cors());
-app.use(express.json({ limit: "16kb" }));
+
+// Use cookie-parser middleware
+app.use(cookieParser());
+
+// Parse JSON bodies (as sent by API clients)
+app.use(express.json());
+
+// Parse URL-encoded bodies (as sent by HTML forms)
+app.use(express.urlencoded({ extended: true }));
+
 app.use(express.static("public"));
 
+// Routes declaration
+app.use("/api/v1/auth", userRouter);
+app.use("/api/v1/notes", notesRouter);
 
-//routes declaration
-app.use("/api/v1/users" , userRouter)
-
-
-
-
-
-
-
-//Home Page of API
+// Home Page of API
 app.get('/', (req, res) => {
   res.send(`
     <style>
@@ -51,35 +57,34 @@ app.get('/', (req, res) => {
     <ul>
       <li>
         <h3>User Registration:</h3>
-        <p><span> POST /auth/register </span> - Register a new user. The request body should include 'username' and 'password'.</p>
+        <p><span> POST /api/v1/auth/register </span> - Register a new user. The request body should include 'username' and 'password'.</p>
       </li>
       <li>
         <h3>User Login:</h3>
-        <p> <span> POST /auth/login </span> - Authenticate a user and return a JWT. The request body should include 'username' and 'password'.</p>
+        <p> <span> POST /api/v1/auth/login </span> - Authenticate a user and return a JWT. The request body should include 'username' and 'password'.</p>
       </li>
       <li>
         <h3>Create a Note:</h3>
-        <p> <span> POST /notes </span> - Create a new note. The request body should include 'title' and 'content'.</p>
+        <p> <span> POST /api/v1/notes/notes </span> - Create a new note. The request body should include 'title' and 'content'.</p>
       </li>
       <li>
         <h3>Retrieve All Notes:</h3>
-        <p> <span> GET /notes </span> - Retrieve all the notes for the authenticated user.</p>
+        <p> <span> GET /api/v1/notes/notes </span> - Retrieve all the notes for the authenticated user.</p>
       </li>
       <li>
         <h3>Retrieve a Specific Note:</h3>
-        <p> <span> GET /notes/:id </span> - Retrieve a specific note by ID.</p>
+        <p> <span> GET /api/v1/notes/notes/:id </span> - Retrieve a specific note by ID.</p>
       </li>
       <li>
         <h3>Update a Note:</h3>
-        <p> <span> PUT /notes/:id </span> - Update a specific note by ID. The request body can include 'title' and/or 'content'.</p>
+        <p> <span> PUT /api/v1/notes/notes/:id </span> - Update a specific note by ID. The request body can include 'title' and/or 'content'.</p>
       </li>
       <li>
         <h3>Delete a Note:</h3>
-        <p> <span> DELETE /notes/:id </span> - Delete a specific note by ID.</p>
+        <p> <span> DELETE /api/v1/notes/notes/:id </span> - Delete a specific note by ID.</p>
       </li>
     </ul>
   `);
 });
-
 
 export { app };

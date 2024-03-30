@@ -103,6 +103,7 @@ const getNotesbyId = asyncHandler(async(req,res)=>{
 
 })
 
+//Delete Note
 const deleteNotesbyId =asyncHandler(async(req,res)=>{
    // Retrieve user ID from the request cookies
    const userId = req.cookies.userId;
@@ -135,6 +136,33 @@ const deleteNotesbyId =asyncHandler(async(req,res)=>{
 
 })
 
+//Update By Id
+const updateNoteById = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const { title, content } = req.body;
+
+    // Retrieve user ID from the request cookies
+    const userId = req.cookies.userId;
+
+    // Check if user ID exists in cookies
+    if (!userId) {
+        throw new ApiError(401, 'User not authenticated');
+    }
+
+    // Find the note by ID and user ID
+    const note = await Note.findOne({ where: { id, UserId: userId } });
+
+    // If note not found or not associated with the user, throw an error
+    if (!note) {
+        throw new ApiError(404, 'Note not found');
+    }
+
+    // Update the note with new title and content
+    await note.update({ title, content });
+
+    res.status(200).json(new ApiResponse(200, note, "Note updated successfully"));
+});
 
 
-export { createNote , getAllNotes , getNotesbyId , deleteNotesbyId};
+
+export { createNote , getAllNotes , getNotesbyId , deleteNotesbyId ,updateNoteById};
